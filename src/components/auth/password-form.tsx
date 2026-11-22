@@ -44,12 +44,13 @@ export function PasswordForm({
         setError(result.error)
         return
       }
-      // Refresh auth context. With email confirmation on, signup yields no session yet.
-      await router.invalidate()
+      // With email confirmation on, signup yields no session yet.
       if (mode === 'signup' && !(await getCurrentUser())) {
         setNotice('Check your email to confirm your account.')
         return
       }
+      // Navigating re-runs the root auth lookup. Invalidating first would make this
+      // page redirect by itself, and the destination would then load twice.
       await router.navigate({ href: redirectTo })
     })
   }
