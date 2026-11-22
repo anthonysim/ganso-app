@@ -231,7 +231,16 @@
 }
 
 /* Theme switch cross-fade (see ThemeProvider.setTheme) */
+::view-transition-group(root),
 ::view-transition-old(root),
 ::view-transition-new(root) {
-  animation-duration: 300ms;
+  animation-duration: 120ms;
+}
+
+/* Set for one style pass while the theme class changes (see applyTheme) */
+.theme-switching,
+.theme-switching *,
+.theme-switching *::before,
+.theme-switching *::after {
+  transition: none !important;
 }
