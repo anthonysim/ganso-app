@@ -1,6 +1,5 @@
 import { Link, createFileRoute, redirect } from '@tanstack/react-router'
 import { AuthCard } from '#/components/auth/auth-card'
-import { PasswordForm } from '#/components/auth/password-form'
 import { safeRedirect } from '#/lib/auth-schemas'
 
 export const Route = createFileRoute('/signup')({
@@ -15,10 +14,11 @@ export const Route = createFileRoute('/signup')({
 
 function SignupPage() {
   const { redirect: redirectParam } = Route.useSearch()
-  const redirectTo = safeRedirect(redirectParam)
   return (
-    <AuthCard title="Create account" description="Start budgeting in minutes.">
-      <PasswordForm mode="signup" redirectTo={redirectTo} />
+    <AuthCard
+      title="Sign-up coming soon"
+      description="We're not accepting new accounts yet. Check back soon."
+    >
       <p className="text-muted-foreground text-center text-sm">
         Have an account?{' '}
         <Link

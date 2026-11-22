@@ -24,13 +24,9 @@ export const signInWithPassword = createServerFn({ method: 'POST' })
 
 export const signUpWithPassword = createServerFn({ method: 'POST' })
   .validator(credentialsSchema)
-  .handler(async ({ data }): Promise<AuthResult> => {
-    const supabase = createSupabaseServerClient()
-    const { error } = await supabase.auth.signUp({
-      ...data,
-      options: { emailRedirectTo: `${getRequestUrl().origin}/auth/callback` },
-    })
-    return { error: error?.message ?? null }
+  .handler(async (): Promise<AuthResult> => {
+    // Sign-up disabled until launch. Re-enable via supabase.auth.signUp.
+    return { error: 'Sign-up is coming soon.' }
   })
 
 export const sendMagicLink = createServerFn({ method: 'POST' })
@@ -39,7 +35,10 @@ export const sendMagicLink = createServerFn({ method: 'POST' })
     const supabase = createSupabaseServerClient()
     const { error } = await supabase.auth.signInWithOtp({
       email: data.email,
-      options: { emailRedirectTo: `${getRequestUrl().origin}/auth/callback` },
+      options: {
+        shouldCreateUser: false,
+        emailRedirectTo: `${getRequestUrl().origin}/auth/callback`,
+      },
     })
     return { error: error?.message ?? null }
   })
