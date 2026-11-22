@@ -1,6 +1,6 @@
 # ganso
 
-YNAB clone to manage personal finances. Zero-based envelope budgeting.
+A simple budgeting app to manage personal finances. Zero-based envelope budgeting.
 
 **Stack:** TanStack Start + Router, React, Tailwind v4 + shadcn/ui, Vitest. Supabase (Postgres + Auth) + Drizzle ORM. Hosted on Vercel.
 

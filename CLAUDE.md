@@ -1,6 +1,6 @@
-# ganso (ynab-clone)
+# ganso
 
-Budgeting app modeled on YNAB.
+Zero-based envelope budgeting app.
 
 ## Tech stack
 

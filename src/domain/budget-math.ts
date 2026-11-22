@@ -5,7 +5,7 @@ import type { MonthString } from '#/lib/month'
 /**
  * Pure zero-based budgeting math. No I/O, all amounts are integer milliunits.
  *
- * Rules (YNAB-style):
+ * Rules:
  * - Available(category, month) = carried-in + assigned + activity
  * - A positive Available carries into the next month. A negative one resets to 0.
  * - Overspending is "credit" up to the amount spent on credit accounts that month, the rest is "cash".

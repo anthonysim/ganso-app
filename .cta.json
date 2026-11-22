@@ -1,5 +1,5 @@
 {
-  "projectName": "ynab-clone",
+  "projectName": "ganso",
   "mode": "file-router",
   "bundler": "vite",
   "typescript": true,
