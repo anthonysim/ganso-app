@@ -28,7 +28,7 @@ export function Wordmark({
           aria-hidden
           className={cn(
             'text-muted-foreground font-medium',
-            size === 'sm' ? 'text-sm' : 'text-2xl',
+            size === 'sm' ? 'hidden text-sm sm:inline' : 'text-2xl',
           )}
         >
           간소

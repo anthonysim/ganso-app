@@ -155,11 +155,13 @@ export function SearchDialog({
         variant="outline"
         size="sm"
         aria-label="Search"
-        className="text-muted-foreground w-44 justify-start"
+        className="text-muted-foreground w-44 justify-start max-sm:size-9 max-sm:justify-center"
         onClick={() => setOpen(true)}
       >
-        <SearchIcon /> Search…
-        <kbd className="bg-muted ml-auto rounded px-1 text-[10px]">⌘K</kbd>
+        <SearchIcon /> <span className="max-sm:hidden">Search…</span>
+        <kbd className="bg-muted ml-auto rounded px-1 text-[10px] max-sm:hidden pointer-coarse:hidden">
+          ⌘K
+        </kbd>
       </Button>
       <Dialog
         open={open}

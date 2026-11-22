@@ -14,7 +14,7 @@ function CategoriesPage() {
   const groups = Route.useLoaderData()
   const { budget } = layout.useLoaderData()
   return (
-    <div className="mx-auto flex max-w-3xl flex-col gap-6 p-6">
+    <div className="mx-auto flex max-w-3xl flex-col gap-6 p-4 @xl/main:p-6">
       <div>
         <h1 className="text-2xl font-semibold">Categories</h1>
         <p className="text-muted-foreground text-sm">

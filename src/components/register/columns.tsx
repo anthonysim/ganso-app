@@ -47,19 +47,24 @@ export function buildColumns({
     helper.display({
       id: 'select',
       header: ({ table }) => (
-        <input
-          type="checkbox"
-          aria-label="Select all transactions"
-          className="size-4"
-          checked={table.getIsAllRowsSelected()}
-          onChange={table.getToggleAllRowsSelectedHandler()}
-        />
+        <label className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            aria-label="Select all transactions"
+            className="size-4 pointer-coarse:size-5"
+            checked={table.getIsAllRowsSelected()}
+            onChange={table.getToggleAllRowsSelectedHandler()}
+          />
+          <span aria-hidden className="hidden @max-[62rem]/main:inline">
+            Select all
+          </span>
+        </label>
       ),
       cell: ({ row }) => (
         <input
           type="checkbox"
           aria-label="Select transaction"
-          className="size-4"
+          className="size-4 pointer-coarse:size-5"
           disabled={!row.getCanSelect()}
           checked={row.getIsSelected()}
           onChange={row.getToggleSelectedHandler()}
@@ -153,7 +158,7 @@ export function buildColumns({
         if (r.cleared === 'reconciled') {
           return (
             <div
-              className="text-muted-foreground flex justify-center"
+              className="text-muted-foreground flex justify-center @max-[62rem]/main:justify-end"
               title="Reconciled"
             >
               <LockIcon className="size-4" />
@@ -161,7 +166,7 @@ export function buildColumns({
           )
         }
         return (
-          <div className="flex justify-center">
+          <div className="flex justify-center @max-[62rem]/main:justify-end">
             <button
               type="button"
               disabled={!m.canEdit}
@@ -171,7 +176,7 @@ export function buildColumns({
               aria-pressed={r.cleared === 'cleared'}
               onClick={() => m.onToggleCleared(r)}
               className={cn(
-                'size-5 rounded-full border text-xs font-semibold',
+                'size-5 rounded-full border text-xs font-semibold pointer-coarse:size-7',
                 r.cleared === 'cleared'
                   ? 'border-positive bg-positive text-primary-foreground'
                   : 'text-muted-foreground',
@@ -213,6 +218,7 @@ export function buildColumns({
                   variant="ghost"
                   size="icon-sm"
                   aria-label="Flag transaction"
+                  className="@max-[62rem]/main:hidden"
                 >
                   <FlagIcon />
                 </Button>
@@ -247,7 +253,8 @@ export function buildColumns({
                 aria-label="Approve transaction"
                 onClick={() => m.onApprove(row.original)}
               >
-                <CheckCheckIcon /> Approve
+                <CheckCheckIcon />{' '}
+                <span className="@max-[62rem]/main:hidden">Approve</span>
               </Button>
             ) : null}
             <Button

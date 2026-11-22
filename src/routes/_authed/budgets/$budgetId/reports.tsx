@@ -94,7 +94,7 @@ function ReportsPage() {
   const hasFlow = data.incomeExpense.some((r) => r.income > 0 || r.expense > 0)
 
   return (
-    <div className="mx-auto flex max-w-5xl flex-col gap-4 p-6">
+    <div className="mx-auto flex max-w-5xl flex-col gap-4 p-4 @xl/main:p-6">
       <h1 className="text-2xl font-semibold">Reports</h1>
       <ReportsFilters
         value={filters}

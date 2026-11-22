@@ -244,3 +244,13 @@
 .theme-switching *::after {
   transition: none !important;
 }
+
+/* iOS zooms the page when a focused field's text is under 16px, so touch screens get 16px.
+   Unlayered on purpose: it must win over the text-sm utilities on the fields. */
+@media (pointer: coarse) {
+  input:not([type='checkbox'], [type='radio']),
+  select,
+  textarea {
+    font-size: 16px;
+  }
+}

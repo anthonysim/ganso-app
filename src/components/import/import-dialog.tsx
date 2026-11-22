@@ -67,7 +67,7 @@ export function ImportDialog({
           <UploadIcon /> Import
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
+      <DialogContent className="max-h-[90vh] grid-cols-[minmax(0,1fr)] overflow-y-auto sm:max-w-2xl">
         <ImportWizard
           budgetId={budgetId}
           accountId={accountId}
@@ -215,7 +215,7 @@ function ImportWizard({
             type="file"
             accept=".csv,.ofx,.qfx,.txt,text/csv"
             onChange={(e) => void onFile(e)}
-            className="text-sm file:mr-3 file:rounded-md file:border file:px-3 file:py-1.5 file:text-sm"
+            className="w-full min-w-0 text-sm file:mr-3 file:rounded-md file:border file:px-3 file:py-1.5 file:text-sm"
           />
         </div>
       ) : null}

@@ -16,7 +16,7 @@ function AllTransactionsPage() {
   const data = Route.useLoaderData()
   const { budget, accounts } = layout.useLoaderData()
   return (
-    <div className="flex flex-col gap-4 p-6">
+    <div className="flex flex-col gap-4 p-4 @xl/main:p-6">
       <h1 className="text-2xl font-semibold">All Transactions</h1>
       <Register budget={budget} accounts={accounts} data={data} />
     </div>

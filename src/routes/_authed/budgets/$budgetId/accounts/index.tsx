@@ -31,10 +31,10 @@ function AccountsPage() {
   ]
 
   return (
-    <div className="mx-auto flex max-w-4xl flex-col gap-8 p-6">
-      <div className="flex items-center justify-between">
+    <div className="mx-auto flex max-w-4xl flex-col gap-8 p-4 @xl/main:p-6">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-2xl font-semibold">All Accounts</h1>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Button asChild variant="outline">
             <Link
               to="/budgets/$budgetId/transactions"
@@ -121,13 +121,13 @@ function AccountGroup({
           <thead className="bg-balance-working/50 text-muted-foreground text-left">
             <tr>
               <th className="px-3 py-2 font-medium">Account</th>
-              <th className="bg-balance-cleared text-balance-cleared-foreground w-36 px-3 py-2 text-right font-medium">
+              <th className="bg-balance-cleared text-balance-cleared-foreground w-36 px-3 py-2 text-right font-medium @max-2xl/main:hidden">
                 Cleared
               </th>
-              <th className="w-36 px-3 py-2 text-right font-medium">
+              <th className="w-36 px-3 py-2 text-right font-medium @max-2xl/main:hidden">
                 Uncleared
               </th>
-              <th className="bg-balance-working w-36 px-3 py-2 text-right font-medium">
+              <th className="bg-balance-working w-36 px-3 py-2 text-right font-medium @max-md/main:w-28">
                 Working
               </th>
               {/* Always rendered so every group table shares the same column widths. */}
@@ -137,7 +137,7 @@ function AccountGroup({
           <tbody>
             {items.map((a, i) => (
               <tr key={a.id} className="border-t">
-                <td className="px-3 py-2">
+                <td className="px-3 py-2 wrap-anywhere">
                   <Link
                     to="/budgets/$budgetId/accounts/$accountId"
                     params={{ budgetId, accountId: a.id }}
@@ -149,14 +149,14 @@ function AccountGroup({
                     {ACCOUNT_TYPE_INFO[a.type].label}
                   </div>
                 </td>
-                <td className="bg-balance-cleared text-balance-cleared-foreground px-3 py-2 text-right">
+                <td className="bg-balance-cleared text-balance-cleared-foreground px-3 py-2 text-right @max-2xl/main:hidden">
                   <Money
                     value={a.clearedBalance}
                     currency={currency}
                     className="text-balance-cleared-foreground"
                   />
                 </td>
-                <td className="px-3 py-2 text-right">
+                <td className="px-3 py-2 text-right @max-2xl/main:hidden">
                   <Money value={a.unclearedBalance} currency={currency} />
                 </td>
                 <td className="bg-balance-working/50 px-3 py-2 text-right font-medium">

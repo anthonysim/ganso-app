@@ -24,6 +24,15 @@ import {
 } from '@dnd-kit/sortable'
 import { toast } from 'sonner'
 import { CategoryLineRow } from '#/components/budget/budget-category-row'
+import {
+  ACTIONS_CELL,
+  ACTIVITY_CELL,
+  ASSIGNED_CELL,
+  AVAILABLE_CELL,
+  CARD_ROW,
+  CardLabel,
+} from '#/components/budget/card-layout'
+import { cn } from '#/lib/utils'
 import { GroupHeaderRow } from '#/components/budget/budget-group-row'
 import { useHotkey } from '#/hooks/use-hotkey'
 import { Money } from '#/components/accounts/money'
@@ -251,9 +260,9 @@ export function BudgetGrid({
   }
 
   return (
-    <div className="flex flex-col gap-4 p-6">
-      <div className="grid grid-cols-[1fr_auto] gap-3">
-        <div className="col-span-2 flex flex-wrap items-center justify-between gap-3">
+    <div className="flex flex-col gap-4 p-4 @xl/main:p-6">
+      <div className="grid gap-3 @3xl/main:grid-cols-[1fr_auto]">
+        <div className="flex flex-wrap items-center justify-between gap-3 @3xl/main:col-span-2">
           <MonthNav budgetId={budget.id} month={view.month} />
           <RtaBanner
             readyToAssign={view.readyToAssign}
@@ -271,7 +280,7 @@ export function BudgetGrid({
           />
         </div>
 
-        <div className="flex items-end gap-1 justify-self-end">
+        <div className="flex items-end gap-1 @3xl/main:justify-self-end">
           <div className="flex gap-1">
             {canEdit ? (
               <>
@@ -301,7 +310,8 @@ export function BudgetGrid({
                   onClick={history.undo}
                   aria-label="Undo"
                 >
-                  <Undo2Icon /> Undo
+                  <Undo2Icon />{' '}
+                  <span className="@max-md/main:hidden">Undo</span>
                 </Button>
                 <Button
                   variant="outline"
@@ -310,7 +320,8 @@ export function BudgetGrid({
                   onClick={history.redo}
                   aria-label="Redo"
                 >
-                  <Redo2Icon /> Redo
+                  <Redo2Icon />{' '}
+                  <span className="@max-md/main:hidden">Redo</span>
                 </Button>
               </>
             ) : null}
@@ -325,13 +336,20 @@ export function BudgetGrid({
           collisionDetection={closestCenter}
           onDragEnd={onDragEnd}
         >
-          <table className="w-full text-sm">
-            <thead className="bg-muted text-muted-foreground sticky top-0 z-10 text-left">
-              <tr>
+          <table className="w-full text-sm @max-md/main:block">
+            <thead className="bg-muted text-muted-foreground sticky top-0 z-10 text-left @max-md/main:block">
+              <tr className={CARD_ROW}>
                 <th className="px-3 py-2 font-medium">Category</th>
-                <th className="px-3 py-2 text-right font-medium">Assigned</th>
-                <th className="px-3 py-2 text-right font-medium">Activity</th>
-                <th className="px-3 py-2 text-right font-medium">Available</th>
+                <th className="px-3 py-2 text-right font-medium @max-md/main:hidden">
+                  Assigned
+                </th>
+                <th className="px-3 py-2 text-right font-medium @max-3xl/main:hidden">
+                  Activity
+                </th>
+                <th className="px-3 py-2 text-right font-medium">
+                  Available
+                  <span className="@md/main:hidden"> / Assigned</span>
+                </th>
                 <th className="w-10 px-2 py-1 text-right">
                   <Button
                     variant="ghost"
@@ -349,7 +367,7 @@ export function BudgetGrid({
                 </th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="@max-md/main:block">
               {groups.map((g) => {
                 const isCollapsed = collapsed.has(g.id)
                 const sortable = canEdit && g.name !== PAYMENT_GROUP_NAME
@@ -387,27 +405,30 @@ export function BudgetGrid({
                   </Fragment>
                 )
               })}
-              <tr className="bg-muted/50 border-t font-semibold">
+              <tr
+                className={cn('bg-muted/50 border-t font-semibold', CARD_ROW)}
+              >
                 <td className="px-3 py-2">Total</td>
-                <td className="px-3 py-2 text-right">
+                <td className={cn('px-3 py-2 text-right', ASSIGNED_CELL)}>
                   <Money
                     value={view.totals.assigned}
                     currency={budget.currency}
                   />
                 </td>
-                <td className="px-3 py-2 text-right">
+                <td className={cn('px-3 py-2 text-right', ACTIVITY_CELL)}>
+                  <CardLabel>Activity</CardLabel>
                   <Money
                     value={view.totals.activity}
                     currency={budget.currency}
                   />
                 </td>
-                <td className="px-3 py-2 text-right">
+                <td className={cn('px-3 py-2 text-right', AVAILABLE_CELL)}>
                   <Money
                     value={view.totals.available}
                     currency={budget.currency}
                   />
                 </td>
-                <td />
+                <td className={ACTIONS_CELL} />
               </tr>
             </tbody>
           </table>
