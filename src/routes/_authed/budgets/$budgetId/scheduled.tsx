@@ -58,8 +58,8 @@ function ScheduledPage() {
   }
 
   return (
-    <div className="mx-auto flex max-w-5xl flex-col gap-4 p-6">
-      <div className="flex items-start justify-between gap-4">
+    <div className="mx-auto flex max-w-5xl flex-col gap-4 p-4 @xl/main:p-6">
+      <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold">Scheduled transactions</h1>
           <p className="text-muted-foreground text-sm">
@@ -80,8 +80,8 @@ function ScheduledPage() {
         <p className="text-muted-foreground text-sm">Nothing scheduled yet.</p>
       ) : (
         <div className="overflow-x-auto rounded-lg border">
-          <table className="w-full text-sm">
-            <thead className="bg-muted/50 text-muted-foreground text-left">
+          <table className="w-full text-sm @max-3xl/main:block">
+            <thead className="bg-muted/50 text-muted-foreground text-left @max-3xl/main:hidden">
               <tr>
                 <th className="px-3 py-2 font-medium">Next date</th>
                 <th className="px-3 py-2 font-medium">Account</th>
@@ -92,25 +92,34 @@ function ScheduledPage() {
                 {canEdit ? <th className="w-40 px-3 py-2" /> : null}
               </tr>
             </thead>
-            <tbody>
+            <tbody className="@max-3xl/main:block">
               {data.scheduled.map((s) => (
-                <tr key={s.id} className="border-t">
-                  <td className="px-3 py-2 tabular-nums">
+                <tr
+                  key={s.id}
+                  className="border-t @max-3xl/main:grid @max-3xl/main:grid-cols-[minmax(0,1fr)_auto] @max-3xl/main:gap-x-3 @max-3xl/main:p-3 @max-3xl/main:first:border-t-0"
+                >
+                  <td className="px-3 py-2 tabular-nums @max-3xl/main:text-muted-foreground @max-3xl/main:col-start-2 @max-3xl/main:row-start-2 @max-3xl/main:p-0 @max-3xl/main:text-right">
                     {formatDateString(s.nextDate, budget.dateFormat)}
                   </td>
-                  <td className="px-3 py-2">{s.accountName}</td>
-                  <td className="px-3 py-2">
+                  <td className="px-3 py-2 @max-3xl/main:text-muted-foreground @max-3xl/main:col-start-1 @max-3xl/main:row-start-3 @max-3xl/main:p-0">
+                    {s.accountName}
+                  </td>
+                  <td className="px-3 py-2 @max-3xl/main:col-start-1 @max-3xl/main:row-start-1 @max-3xl/main:p-0 @max-3xl/main:font-medium @max-3xl/main:wrap-anywhere">
                     {s.transferAccountName
                       ? `Transfer: ${s.transferAccountName}`
                       : (s.payeeName ?? '—')}
                   </td>
-                  <td className="px-3 py-2">{s.categoryName ?? '—'}</td>
-                  <td className="px-3 py-2">{FREQUENCY_LABELS[s.frequency]}</td>
-                  <td className="px-3 py-2 text-right">
+                  <td className="px-3 py-2 @max-3xl/main:text-muted-foreground @max-3xl/main:col-start-1 @max-3xl/main:row-start-2 @max-3xl/main:p-0">
+                    {s.categoryName ?? '—'}
+                  </td>
+                  <td className="px-3 py-2 @max-3xl/main:text-muted-foreground @max-3xl/main:col-start-2 @max-3xl/main:row-start-3 @max-3xl/main:p-0 @max-3xl/main:text-right">
+                    {FREQUENCY_LABELS[s.frequency]}
+                  </td>
+                  <td className="px-3 py-2 text-right @max-3xl/main:col-start-2 @max-3xl/main:row-start-1 @max-3xl/main:p-0 @max-3xl/main:font-medium">
                     <Money value={s.amount} currency={budget.currency} />
                   </td>
                   {canEdit ? (
-                    <td className="px-3 py-1">
+                    <td className="px-3 py-1 @max-3xl/main:col-span-2 @max-3xl/main:row-start-4 @max-3xl/main:p-0 @max-3xl/main:pt-2">
                       <div className="flex justify-end gap-1">
                         <Button
                           size="sm"

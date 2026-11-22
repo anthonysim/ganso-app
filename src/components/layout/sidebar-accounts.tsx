@@ -27,6 +27,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from '#/components/ui/sidebar'
 import { reorderWithinGroup } from '#/lib/accounts'
 import { cn } from '#/lib/utils'
@@ -69,6 +70,7 @@ export function SidebarAccounts({
   accounts: Array<AccountWithBalances>
 }) {
   const router = useRouter()
+  const { setOpenMobile } = useSidebar()
   const [, startReorder] = useTransition()
   const [ordered, setOrdered] = useOptimistic(accounts)
   const sensors = useSensors(
@@ -159,10 +161,16 @@ export function SidebarAccounts({
                           id={a.id}
                           disabled={!canEdit}
                         >
-                          <SidebarMenuButton asChild tooltip={a.name} size="sm">
+                          <SidebarMenuButton
+                            asChild
+                            tooltip={a.name}
+                            size="sm"
+                            className="pointer-coarse:h-10 group-data-[collapsible=icon]:pointer-coarse:h-8"
+                          >
                             <Link
                               to="/budgets/$budgetId/accounts/$accountId"
                               params={{ budgetId: budget.id, accountId: a.id }}
+                              onClick={() => setOpenMobile(false)}
                               activeProps={{ 'data-active': true }}
                             >
                               <span

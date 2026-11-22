@@ -86,7 +86,7 @@ function MembersPage() {
   const actor = { userId: currentUserId, role }
 
   return (
-    <div className="mx-auto flex max-w-3xl flex-col gap-6 p-6">
+    <div className="mx-auto flex max-w-3xl flex-col gap-6 p-4 @xl/main:p-6">
       <div>
         <h1 className="text-2xl font-semibold">Sharing</h1>
         <p className="text-muted-foreground text-sm">
@@ -164,11 +164,11 @@ function MembersPage() {
                 return (
                   <tr key={m.userId} className="border-t">
                     <td className="px-3 py-2">
-                      <div className="font-medium">
+                      <div className="font-medium wrap-anywhere">
                         {m.displayName ?? m.email ?? 'Unknown'}
                         {m.userId === currentUserId ? ' (you)' : ''}
                       </div>
-                      <div className="text-muted-foreground text-xs">
+                      <div className="text-muted-foreground text-xs wrap-anywhere">
                         {m.email}
                       </div>
                     </td>
@@ -234,7 +234,7 @@ function MembersPage() {
               <tbody>
                 {invites.map((i) => (
                   <tr key={i.id} className="border-t first:border-t-0">
-                    <td className="px-3 py-2">{i.email}</td>
+                    <td className="px-3 py-2 wrap-anywhere">{i.email}</td>
                     <td className="px-3 py-2">{ROLE_LABELS[i.role]}</td>
                     <td className="px-3 py-1 text-right">
                       <Button

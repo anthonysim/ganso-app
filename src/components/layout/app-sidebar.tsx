@@ -18,6 +18,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarTrigger,
+  useSidebar,
 } from '#/components/ui/sidebar'
 import { SidebarAccounts } from '#/components/layout/sidebar-accounts'
 import type { AccountWithBalances } from '#/server/accounts-query'
@@ -61,6 +62,7 @@ export function AppSidebar({
   budget: BudgetSummary
   accounts: Array<AccountWithBalances>
 }) {
+  const { setOpenMobile } = useSidebar()
   return (
     <Sidebar
       variant="floating"
@@ -78,10 +80,15 @@ export function AppSidebar({
             <SidebarMenu>
               {NAV.map(({ to, label, icon: Icon, ...rest }) => (
                 <SidebarMenuItem key={to}>
-                  <SidebarMenuButton asChild tooltip={label}>
+                  <SidebarMenuButton
+                    asChild
+                    tooltip={label}
+                    className="pointer-coarse:h-10 group-data-[collapsible=icon]:pointer-coarse:h-8"
+                  >
                     <Link
                       to={to}
                       params={{ budgetId: budget.id }}
+                      onClick={() => setOpenMobile(false)}
                       activeProps={{ 'data-active': true }}
                       activeOptions={{ exact: 'exact' in rest }}
                     >

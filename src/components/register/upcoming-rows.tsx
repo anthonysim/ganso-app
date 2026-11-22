@@ -4,6 +4,8 @@ import { PencilIcon } from 'lucide-react'
 import { Button } from '#/components/ui/button'
 import { Money } from '#/components/accounts/money'
 import { ScheduledDialog } from '#/components/scheduled/scheduled-dialog'
+import { CARD_ROW, CELL } from '#/components/register/card-layout'
+import { cn } from '#/lib/utils'
 import { formatDateString } from '#/lib/date'
 import { FREQUENCY_LABELS } from '#/lib/schedule'
 import { splitAmount } from '#/lib/transactions'
@@ -54,36 +56,45 @@ export function UpcomingRows({
           <Fragment key={s.id}>
             <tr
               data-testid="upcoming-row"
-              className="bg-muted/10 text-muted-foreground border-t italic"
+              className={cn(
+                'bg-muted/10 text-muted-foreground border-t italic',
+                CARD_ROW,
+              )}
             >
-              <td />
+              <td className="@max-[62rem]/main:w-6" />
               {!singleAccount ? (
-                <td className="px-2 py-1.5">{s.accountName}</td>
+                <td className={cn('px-2 py-1.5', CELL.accountName)}>
+                  {s.accountName}
+                </td>
               ) : null}
-              <td className="px-2 py-1.5 tabular-nums">
+              <td className={cn('px-2 py-1.5 tabular-nums', CELL.date)}>
                 {formatDateString(s.nextDate, budget.dateFormat)}
               </td>
-              <td className="px-2 py-1.5">{payee}</td>
-              <td className="px-2 py-1.5">
+              <td className={cn('px-2 py-1.5', CELL.payeeName)}>{payee}</td>
+              <td className={cn('px-2 py-1.5', CELL.categoryName)}>
                 {reversed ? '' : (s.categoryName ?? '')}
               </td>
-              <td className="px-2 py-1.5">
+              <td className={cn('px-2 py-1.5', CELL.memo)}>
                 {FREQUENCY_LABELS[s.frequency]}
                 {s.memo ? ` · ${s.memo}` : ''}
               </td>
-              <td className="px-2 py-1.5 text-right">
+              <td className={cn('px-2 py-1.5 text-right', CELL.outflow)}>
                 {outflow ? (
                   <Money value={-outflow} currency={budget.currency} />
                 ) : null}
               </td>
-              <td className="px-2 py-1.5 text-right">
+              <td className={cn('px-2 py-1.5 text-right', CELL.inflow)}>
                 {inflow ? (
                   <Money value={inflow} currency={budget.currency} />
                 ) : null}
               </td>
-              <td className="px-2 py-1.5 text-center text-xs">Sched.</td>
-              {singleAccount ? <td /> : null}
-              <td className="px-2 py-1.5">
+              <td className="px-2 py-1.5 text-center text-xs @max-[62rem]/main:hidden">
+                Sched.
+              </td>
+              {singleAccount ? (
+                <td className="@max-[62rem]/main:hidden" />
+              ) : null}
+              <td className={cn('px-2 py-1.5', CELL.actions)}>
                 <div className="flex justify-end">
                   {reversed ? (
                     <Button

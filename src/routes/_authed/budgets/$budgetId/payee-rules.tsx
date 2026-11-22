@@ -34,8 +34,8 @@ function PayeeRulesPage() {
       : '—'
 
   return (
-    <div className="mx-auto flex max-w-4xl flex-col gap-4 p-6">
-      <div className="flex items-start justify-between gap-4">
+    <div className="mx-auto flex max-w-4xl flex-col gap-4 p-4 @xl/main:p-6">
+      <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold">Payee rules</h1>
           <p className="text-muted-foreground text-sm">
@@ -56,8 +56,8 @@ function PayeeRulesPage() {
         <p className="text-muted-foreground text-sm">No rules yet.</p>
       ) : (
         <div className="overflow-x-auto rounded-lg border">
-          <table className="w-full text-sm">
-            <thead className="bg-muted/50 text-muted-foreground text-left">
+          <table className="w-full text-sm @max-lg/main:block">
+            <thead className="bg-muted/50 text-muted-foreground text-left @max-lg/main:hidden">
               <tr>
                 <th className="px-3 py-2 font-medium">When the bank payee</th>
                 <th className="px-3 py-2 font-medium">Rename to</th>
@@ -65,16 +65,23 @@ function PayeeRulesPage() {
                 {canEdit ? <th className="w-24 px-3 py-2" /> : null}
               </tr>
             </thead>
-            <tbody>
+            <tbody className="@max-lg/main:block">
               {rules.map((r) => (
-                <tr key={r.id} className="border-t">
-                  <td className="px-3 py-2">
+                <tr
+                  key={r.id}
+                  className="border-t @max-lg/main:grid @max-lg/main:grid-cols-[minmax(0,1fr)_auto] @max-lg/main:gap-x-3 @max-lg/main:p-3 @max-lg/main:first:border-t-0"
+                >
+                  <td className="px-3 py-2 @max-lg/main:text-muted-foreground @max-lg/main:col-start-1 @max-lg/main:p-0 @max-lg/main:wrap-anywhere">
                     {MATCH_LABELS[r.matchType]} “{r.pattern}”
                   </td>
-                  <td className="px-3 py-2">{r.payeeName}</td>
-                  <td className="px-3 py-2">{categoryName(r.categoryId)}</td>
+                  <td className="px-3 py-2 @max-lg/main:col-start-1 @max-lg/main:row-start-1 @max-lg/main:p-0 @max-lg/main:font-medium @max-lg/main:wrap-anywhere">
+                    {r.payeeName}
+                  </td>
+                  <td className="px-3 py-2 @max-lg/main:text-muted-foreground @max-lg/main:col-start-1 @max-lg/main:p-0">
+                    {categoryName(r.categoryId)}
+                  </td>
                   {canEdit ? (
-                    <td className="px-3 py-1">
+                    <td className="px-3 py-1 @max-lg/main:col-start-2 @max-lg/main:row-span-3 @max-lg/main:row-start-1 @max-lg/main:p-0">
                       <div className="flex justify-end gap-1">
                         <PayeeRuleDialog
                           budgetId={budget.id}

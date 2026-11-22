@@ -23,6 +23,14 @@ import {
   SelectValue,
 } from '#/components/ui/select'
 import { BulkBar } from '#/components/register/bulk-bar'
+import { cn } from '#/lib/utils'
+import {
+  CARD_ROW,
+  CELL,
+  TABLE,
+  WIDE_CELL,
+  WIDE_ROW,
+} from '#/components/register/card-layout'
 import { buildColumns } from '#/components/register/columns'
 import type { RegisterMeta } from '#/components/register/columns'
 import { TransactionEditor } from '#/components/register/transaction-editor'
@@ -248,14 +256,14 @@ export function Register({
         <SearchInput
           aria-label="Search transactions"
           placeholder="Search payee, memo, category…"
-          className="max-w-xs"
+          className="@xl/main:max-w-xs"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onClear={() => setQuery('')}
         />
         <NativeSelect
           aria-label="Filter by cleared status"
-          className="w-40"
+          className="w-40 @max-xl/main:flex-1"
           value={clearedFilter}
           onChange={(e) => setClearedFilter(e.target.value as ClearedFilter)}
         >
@@ -268,7 +276,11 @@ export function Register({
           value={flagFilter}
           onValueChange={(v) => setFlagFilter(v as 'all' | 'any' | Flag)}
         >
-          <SelectTrigger aria-label="Filter by flag" size="sm" className="w-40">
+          <SelectTrigger
+            aria-label="Filter by flag"
+            size="sm"
+            className="w-40 @max-xl/main:flex-1"
+          >
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -288,7 +300,7 @@ export function Register({
         </Select>
         {canEdit ? (
           <Button
-            className="ml-auto"
+            className="ml-auto @max-xl/main:w-full"
             onClick={() => editor.current?.open('new')}
           >
             <PlusIcon /> Add transaction
@@ -375,22 +387,32 @@ export function Register({
       </datalist>
 
       <div className="overflow-x-auto rounded-lg border">
-        <table className="w-full text-sm">
-          <thead className="bg-muted/50 text-muted-foreground text-left">
+        <table className={cn('w-full text-sm', TABLE)}>
+          <thead
+            className={cn('bg-muted/50 text-muted-foreground text-left', TABLE)}
+          >
             {table.getHeaderGroups().map((hg) => (
-              <tr key={hg.id}>
+              <tr key={hg.id} className={WIDE_ROW}>
                 {hg.headers.map((h) => (
-                  <th key={h.id} className="px-2 py-2 font-medium">
+                  <th
+                    key={h.id}
+                    className={cn(
+                      'px-2 py-2 font-medium',
+                      h.column.id === 'select'
+                        ? '@max-[62rem]/main:block @max-[62rem]/main:px-3'
+                        : '@max-[62rem]/main:hidden',
+                    )}
+                  >
                     {flexRender(h.column.columnDef.header, h.getContext())}
                   </th>
                 ))}
               </tr>
             ))}
           </thead>
-          <tbody>
+          <tbody className={TABLE}>
             {data.scheduled.length > 0 ? (
-              <tr className="bg-muted/50 border-t">
-                <td colSpan={columnCount} className="p-0">
+              <tr className={cn('bg-muted/50 border-t', WIDE_ROW)}>
+                <td colSpan={columnCount} className={cn('p-0', WIDE_CELL)}>
                   <button
                     type="button"
                     aria-expanded={scheduledOpen}
@@ -426,10 +448,16 @@ export function Register({
                   data-state={row.getIsSelected() ? 'selected' : undefined}
                   data-approved={row.original.approved}
                   onKeyDown={(e) => moveFocus(e, row.original)}
-                  className="data-[approved=false]:border-l-primary data-[approved=false]:border-l-4 data-[approved=false]:font-semibold data-[state=selected]:bg-muted/60 hover:bg-muted/30 focus-visible:ring-ring border-t outline-none focus-visible:ring-2 focus-visible:ring-inset"
+                  className={cn(
+                    'data-[approved=false]:border-l-primary data-[approved=false]:border-l-4 data-[approved=false]:font-semibold data-[state=selected]:bg-muted/60 hover:bg-muted/30 focus-visible:ring-ring border-t outline-none focus-visible:ring-2 focus-visible:ring-inset',
+                    CARD_ROW,
+                  )}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id} className="px-2 py-1.5">
+                    <td
+                      key={cell.id}
+                      className={cn('px-2 py-1.5', CELL[cell.column.id])}
+                    >
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext(),
@@ -441,38 +469,52 @@ export function Register({
                   <tr
                     key={sp.id}
                     data-testid="split-display-line"
-                    className="bg-muted/20 text-muted-foreground"
+                    className={cn(
+                      'bg-muted/20 text-muted-foreground',
+                      CARD_ROW,
+                    )}
                   >
-                    <td />
-                    {!singleAccount ? <td /> : null}
-                    <td />
-                    <td className="px-2 py-1 pl-6 text-xs">Split</td>
-                    <td className="px-2 py-1">
+                    <td className="@max-[62rem]/main:hidden" />
+                    {!singleAccount ? (
+                      <td className="@max-[62rem]/main:hidden" />
+                    ) : null}
+                    <td className="@max-[62rem]/main:hidden" />
+                    <td className="px-2 py-1 pl-6 text-xs @max-[62rem]/main:col-start-1">
+                      Split
+                    </td>
+                    <td className="px-2 py-1 @max-[62rem]/main:col-start-2">
                       {sp.categoryName ?? 'Uncategorized'}
                     </td>
-                    <td className="px-2 py-1">{sp.memo ?? ''}</td>
-                    <td className="px-2 py-1 text-right">
+                    <td className="px-2 py-1 @max-[62rem]/main:col-start-2 @max-[62rem]/main:row-start-2 @max-[62rem]/main:py-0 @max-[62rem]/main:text-xs">
+                      {sp.memo ?? ''}
+                    </td>
+                    <td className={cn('px-2 py-1 text-right', CELL.outflow)}>
                       {sp.amount < 0 ? (
                         <Money value={sp.amount} currency={budget.currency} />
                       ) : null}
                     </td>
-                    <td className="px-2 py-1 text-right">
+                    <td className={cn('px-2 py-1 text-right', CELL.inflow)}>
                       {sp.amount > 0 ? (
                         <Money value={sp.amount} currency={budget.currency} />
                       ) : null}
                     </td>
-                    <td />
-                    {singleAccount ? <td /> : null}
-                    <td />
+                    <td className="@max-[62rem]/main:w-8" />
+                    {singleAccount ? (
+                      <td className="@max-[62rem]/main:hidden" />
+                    ) : null}
+                    <td className="@max-[62rem]/main:hidden" />
                   </tr>
                 ))}
               </Fragment>
             ))}
             {rows.length === 0 ? (
-              <tr>
+              <tr className={WIDE_ROW}>
                 <td
                   colSpan={columnCount}
-                  className="text-muted-foreground px-4 py-8 text-center"
+                  className={cn(
+                    'text-muted-foreground px-4 py-8 text-center',
+                    WIDE_CELL,
+                  )}
                 >
                   {data.transactions.length === 0
                     ? 'No transactions yet.'

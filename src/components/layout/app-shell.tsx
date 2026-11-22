@@ -36,21 +36,27 @@ export function AppShell({
       className="bg-canvas h-svh flex-col overflow-hidden"
       style={{ '--header-height': '3.5rem' } as CSSProperties}
     >
-      <header className="bg-canvas flex h-(--header-height) shrink-0 items-center gap-2 px-4">
-        <div className="flex w-full items-center gap-2">
+      <header className="bg-canvas flex h-(--header-height) shrink-0 items-center gap-2 px-3 md:px-4">
+        <div className="flex w-full min-w-0 items-center gap-1 sm:gap-2">
           {/* Desktop toggle lives in the sidebar; the sidebar is a sheet on mobile, so keep one here. */}
-          <SidebarTrigger aria-label="Open sidebar" className="md:hidden" />
+          <SidebarTrigger
+            aria-label="Open sidebar"
+            className="size-9 shrink-0 md:hidden"
+          />
           <Link
             to="/budget"
             aria-label="ganso home"
             title="간소 · simplicity"
-            className="mr-1 rounded-md px-1"
+            className="shrink-0 rounded-md px-1 whitespace-nowrap sm:mr-1"
           >
             <Wordmark />
           </Link>
-          <span aria-hidden className="bg-border h-5 w-px" />
+          <span
+            aria-hidden
+            className="bg-border hidden h-5 w-px shrink-0 sm:block"
+          />
           <BudgetSwitcher current={budget} budgets={budgets} />
-          <div className="ml-auto flex items-center gap-2">
+          <div className="ml-auto flex shrink-0 items-center gap-1 sm:gap-2">
             <SearchDialog
               budgetId={budget.id}
               currency={budget.currency}
@@ -62,13 +68,14 @@ export function AppShell({
       </header>
       <div className="flex min-h-0 flex-1">
         <AppSidebar budget={budget} accounts={accounts} />
-        <SidebarInset className="m-3 min-h-0 min-w-0 md:ml-0 bg-background overflow-y-auto overscroll-contain rounded-xl border [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <SidebarInset className="m-2 min-h-0 md:m-3 min-w-0 md:ml-0 bg-background overflow-y-auto overscroll-contain rounded-xl border [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {invites.length > 0 ? (
-            <div className="px-6 pt-4">
+            <div className="px-4 pt-4 md:px-6">
               <InvitesBanner invites={invites} />
             </div>
           ) : null}
-          <div className="flex-1">{children}</div>
+          {/* Pages size themselves to this box (@container/main), so an open sidebar counts. */}
+          <div className="@container/main flex-1">{children}</div>
         </SidebarInset>
       </div>
       <ShortcutsDialog />

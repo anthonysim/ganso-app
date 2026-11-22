@@ -83,7 +83,7 @@ function AccountPage() {
   ]
 
   return (
-    <div className="mx-auto flex max-w-6xl flex-col gap-6 p-6">
+    <div className="mx-auto flex max-w-6xl flex-col gap-6 p-4 @xl/main:p-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold">
@@ -107,7 +107,7 @@ function AccountPage() {
           ) : null}
         </div>
         {canEdit ? (
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <EditAccountDialog
               budgetId={budget.id}
               accountId={account.id}
@@ -176,15 +176,18 @@ function AccountPage() {
         </div>
       ) : null}
 
-      <dl className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+      <dl className="grid grid-cols-1 gap-2 @md/main:grid-cols-3 @3xl/main:gap-4">
         {balances.map((b) => (
-          <div key={b.label} className={`rounded-lg border p-4 ${b.tint}`}>
+          <div
+            key={b.label}
+            className={`rounded-lg border p-3 @max-md/main:flex @max-md/main:items-baseline @max-md/main:justify-between @3xl/main:p-4 ${b.tint}`}
+          >
             <dt
               className={`text-sm ${b.solid ? 'text-balance-cleared-foreground/80' : 'text-muted-foreground'}`}
             >
               {b.label}
             </dt>
-            <dd className="mt-1 text-xl font-semibold">
+            <dd className="text-base font-semibold @md/main:mt-1 @3xl/main:text-xl">
               <Money
                 value={b.value}
                 currency={budget.currency}

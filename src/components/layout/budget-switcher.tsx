@@ -35,7 +35,11 @@ export function BudgetSwitcher({
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="sm" className="max-w-64 gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="max-w-64 min-w-0 shrink gap-2 max-sm:px-2"
+          >
             <span className="truncate font-semibold">{current.name}</span>
             <ChevronsUpDownIcon className="text-muted-foreground" />
           </Button>

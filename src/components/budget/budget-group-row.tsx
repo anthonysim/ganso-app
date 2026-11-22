@@ -6,6 +6,8 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '#/components/ui/tooltip'
+import { CARD_ROW } from '#/components/budget/card-layout'
+import { cn } from '#/lib/utils'
 import type { BudgetGroupRow as GroupRow } from '#/lib/budget-month'
 
 /** Group header row: collapse toggle, group totals and an "add category" button. */
@@ -25,14 +27,14 @@ export function GroupHeaderRow({
   onAdd: (group: GroupRow) => void
 }) {
   return (
-    <tr className="bg-muted/70 border-t font-medium">
+    <tr className={cn('bg-muted/70 border-t font-medium', CARD_ROW)}>
       <td className="px-3 py-2">
         <button
           type="button"
           aria-expanded={!collapsed}
           aria-label={`${collapsed ? 'Expand' : 'Collapse'} ${group.name}`}
           onClick={() => onToggle(group.id)}
-          className="flex items-center gap-1"
+          className="flex items-center gap-1 text-left pointer-coarse:py-1"
         >
           {collapsed ? (
             <ChevronRightIcon className="size-4" />
@@ -42,10 +44,10 @@ export function GroupHeaderRow({
           {group.name}
         </button>
       </td>
-      <td className="px-3 py-2 text-right">
+      <td className="px-3 py-2 text-right @max-md/main:hidden">
         <Money value={group.assigned} currency={currency} />
       </td>
-      <td className="px-3 py-2 text-right">
+      <td className="px-3 py-2 text-right @max-3xl/main:hidden">
         <Money value={group.activity} currency={currency} />
       </td>
       <td className="px-3 py-2 text-right">
