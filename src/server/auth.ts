@@ -1,7 +1,12 @@
 import { createServerFn } from '@tanstack/react-start'
 import { getRequestUrl } from '@tanstack/react-start/server'
 import { createSupabaseServerClient } from '#/lib/supabase/server'
-import { credentialsSchema, magicLinkSchema } from '#/lib/auth-schemas'
+import {
+  changePasswordSchema,
+  credentialsSchema,
+  magicLinkSchema,
+} from '#/lib/auth-schemas'
+import { requireUser } from '#/server/require-user'
 
 export type AuthResult = { error: string | null }
 
@@ -39,6 +44,23 @@ export const sendMagicLink = createServerFn({ method: 'POST' })
         shouldCreateUser: false,
         emailRedirectTo: `${getRequestUrl().origin}/auth/callback`,
       },
+    })
+    return { error: error?.message ?? null }
+  })
+
+export const changePassword = createServerFn({ method: 'POST' })
+  .validator(changePasswordSchema)
+  .handler(async ({ data }): Promise<AuthResult> => {
+    const user = await requireUser()
+    const supabase = createSupabaseServerClient()
+    // Re-verify the current password so a hijacked session can't change it.
+    const { error: verifyError } = await supabase.auth.signInWithPassword({
+      email: user.email ?? '',
+      password: data.currentPassword,
+    })
+    if (verifyError) return { error: 'Current password is incorrect' }
+    const { error } = await supabase.auth.updateUser({
+      password: data.newPassword,
     })
     return { error: error?.message ?? null }
   })
