@@ -44,7 +44,7 @@ export async function queryBudgetMathInput(
       kind === 'inflow'
         ? sql`c.system_kind = 'inflow'`
         : sql`c.system_kind is distinct from 'inflow'`
-    const rows = await db().execute(sql`
+    const { rows } = await db().execute(sql`
       with lines as (
         select t.account_id, t.date, t.category_id, t.amount
         from transactions t
@@ -69,7 +69,7 @@ export async function queryBudgetMathInput(
       where ${kindFilter}
       group by l.category_id, 2, l.account_id, a.type
     `)
-    return [...rows] as unknown as Array<LineRow>
+    return rows as unknown as Array<LineRow>
   }
 
   const [cats, assignments, spendingRows, incomeRows] = await Promise.all([
