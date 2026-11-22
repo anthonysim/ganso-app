@@ -1,5 +1,5 @@
 import { useState, useTransition } from 'react'
-import { useRouter } from '@tanstack/react-router'
+import { useHydrated, useRouter } from '@tanstack/react-router'
 import { Button } from '#/components/ui/button'
 import { Input } from '#/components/ui/input'
 import { Label } from '#/components/ui/label'
@@ -21,6 +21,8 @@ export function PasswordForm({
   const [error, setError] = useState<string | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
   const [pending, startTransition] = useTransition()
+  // Submitting before hydration would be a native POST that only reloads the page.
+  const hydrated = useHydrated()
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -86,7 +88,7 @@ export function PasswordForm({
         </p>
       ) : null}
       {notice ? <p className="text-sm">{notice}</p> : null}
-      <Button type="submit" disabled={pending}>
+      <Button type="submit" disabled={!hydrated || pending}>
         {pending ? 'Please wait…' : mode === 'login' ? 'Log in' : 'Sign up'}
       </Button>
     </form>

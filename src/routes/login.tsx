@@ -1,7 +1,6 @@
 import { createFileRoute, redirect } from '@tanstack/react-router'
-import { AuthCard } from '#/components/auth/auth-card'
-import { MagicLinkForm } from '#/components/auth/magic-link-form'
-import { PasswordForm } from '#/components/auth/password-form'
+import { LandingLayout } from '#/components/auth/landing-layout'
+import { LoginPanel } from '#/components/auth/login-panel'
 import { safeRedirect } from '#/lib/auth-schemas'
 
 export const Route = createFileRoute('/login')({
@@ -19,20 +18,12 @@ export const Route = createFileRoute('/login')({
 
 function LoginPage() {
   const { redirect: redirectParam, error } = Route.useSearch()
-  const redirectTo = safeRedirect(redirectParam)
   return (
-    <AuthCard title="Log in" description="Welcome back.">
-      {error ? (
-        <p role="alert" className="text-destructive text-sm">
-          That sign-in link is invalid or expired. Try again.
-        </p>
-      ) : null}
-      <PasswordForm mode="login" redirectTo={redirectTo} />
-      <div className="text-muted-foreground text-center text-xs">or</div>
-      <MagicLinkForm />
-      <p className="text-muted-foreground text-center text-sm">
-        Sign-up is coming soon.
-      </p>
-    </AuthCard>
+    <LandingLayout>
+      <LoginPanel
+        redirectTo={safeRedirect(redirectParam)}
+        linkError={Boolean(error)}
+      />
+    </LandingLayout>
   )
 }

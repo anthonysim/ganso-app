@@ -45,6 +45,10 @@
   --color-negative: var(--negative);
   --color-negative-soft: var(--negative-soft);
   --color-negative-foreground: var(--negative-foreground);
+  --color-hero: var(--hero);
+  --color-hero-glow: var(--hero-glow);
+  --color-hero-foreground: var(--hero-foreground);
+  --color-hero-muted: var(--hero-muted);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -96,6 +100,10 @@
   --chart-ink-2: #52514e;
   --chart-muted: #898781;
   --chart-critical: #d03b3b;
+  --hero: oklch(0.3 0.135 272);
+  --hero-glow: oklch(0.497 0.217 270.9);
+  --hero-foreground: oklch(0.985 0.008 277);
+  --hero-muted: oklch(0.86 0.05 278);
   --border: oklch(0.929 0.011 274.9);
   --input: oklch(0.896 0.017 274.8);
   --ring: oklch(0.497 0.217 270.9 / 60%);
@@ -153,6 +161,10 @@
   --chart-ink-2: #c3c2b7;
   --chart-muted: #898781;
   --chart-critical: #d03b3b;
+  --hero: oklch(0.205 0.06 274);
+  --hero-glow: oklch(0.4 0.17 272);
+  --hero-foreground: oklch(0.955 0.014 277);
+  --hero-muted: oklch(0.79 0.05 277);
   --border: oklch(0.289 0.032 274);
   --input: oklch(0.334 0.038 273.8);
   --ring: oklch(0.675 0.173 276 / 60%);
