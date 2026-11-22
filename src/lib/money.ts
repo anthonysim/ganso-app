@@ -1,7 +1,7 @@
 import { evalAssignedInput } from '#/lib/assign-expression'
 
 /**
- * Money is stored as integer milliunits ($1.00 = 1000), like YNAB.
+ * Money is stored as integer milliunits ($1.00 = 1000).
  * Never use floats for stored/calculated amounts.
  */
 export type Milliunits = number
