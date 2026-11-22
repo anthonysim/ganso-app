@@ -19,7 +19,13 @@ const ThemeContext = createContext<ThemeContextValue | null>(null)
 
 function applyTheme(theme: Theme) {
   const dark = isDark(theme, matchMedia('(prefers-color-scheme: dark)').matches)
-  document.documentElement.classList.toggle('dark', dark)
+  const root = document.documentElement
+  // Per-element color transitions would trail behind the page cross-fade, so switch
+  // them off while the colors change.
+  root.classList.add('theme-switching')
+  root.classList.toggle('dark', dark)
+  void root.offsetHeight // apply the new colors before transitions come back
+  root.classList.remove('theme-switching')
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
