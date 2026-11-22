@@ -46,11 +46,11 @@ export async function queryReports(params: {
   // "all time" starts at the first transaction
   let from = params.from
   if (!from) {
-    const first = await db().execute(
+    const { rows } = await db().execute(
       sql`select min(date)::text as d from transactions where budget_id = ${budgetId}`,
     )
     from =
-      ((first[0] as { d: string | null } | undefined)?.d ?? to).slice(0, 7) +
+      ((rows[0] as { d: string | null } | undefined)?.d ?? to).slice(0, 7) +
       '-01'
   }
   const months = monthsInRange(from, to)
@@ -64,7 +64,7 @@ export async function queryReports(params: {
         ? sql`g.name`
         : sql`case when l.is_transfer then 'Transfer' else coalesce(p.name, 'No payee') end`
 
-  const [spendingRows, flowRows, netRows, openingRows, eventRows] =
+  const [spendingResult, flowResult, netResult, openingResult, eventResult] =
     await Promise.all([
       db().execute(sql`
         with ${linesCte(budgetId)}
@@ -123,15 +123,15 @@ export async function queryReports(params: {
     ])
 
   const spending = foldTopN(
-    (spendingRows as unknown as Array<{ label: string; amount: number }>).map(
-      (r) => ({ label: r.label, amount: r.amount }),
-    ),
+    (
+      spendingResult.rows as unknown as Array<{ label: string; amount: number }>
+    ).map((r) => ({ label: r.label, amount: r.amount })),
     SPENDING_ROWS,
   )
 
   const flowBy = new Map(
     (
-      flowRows as unknown as Array<{
+      flowResult.rows as unknown as Array<{
         month: string
         income: number
         expense: number
@@ -144,13 +144,13 @@ export async function queryReports(params: {
     expense: flowBy.get(month)?.expense ?? 0,
   }))
 
-  const opening = (openingRows[0] ?? { assets: 0, liabilities: 0 }) as {
+  const opening = (openingResult.rows[0] ?? { assets: 0, liabilities: 0 }) as {
     assets: number
     liabilities: number
   }
   const netWorth = netWorthSeries(
     opening,
-    netRows as unknown as Array<{
+    netResult.rows as unknown as Array<{
       month: string
       assets: number
       liabilities: number
@@ -159,7 +159,7 @@ export async function queryReports(params: {
   )
 
   const timeline = ageOfMoneyTimeline(
-    eventRows as unknown as Array<{ date: string; amount: number }>,
+    eventResult.rows as unknown as Array<{ date: string; amount: number }>,
   )
   const lastDay = (month: string) => {
     const [y = 0, m = 1] = month.split('-').map(Number)
