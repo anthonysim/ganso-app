@@ -26,10 +26,8 @@ function Home() {
               Log in
             </Link>
           </Button>
-          <Button asChild variant="outline">
-            <Link to="/signup" search={{ redirect: '/budget' }}>
-              Sign up
-            </Link>
+          <Button variant="outline" disabled>
+            Sign up · Coming soon
           </Button>
         </div>
       )}

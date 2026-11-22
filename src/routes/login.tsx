@@ -1,4 +1,4 @@
-import { Link, createFileRoute, redirect } from '@tanstack/react-router'
+import { createFileRoute, redirect } from '@tanstack/react-router'
 import { AuthCard } from '#/components/auth/auth-card'
 import { MagicLinkForm } from '#/components/auth/magic-link-form'
 import { PasswordForm } from '#/components/auth/password-form'
@@ -31,14 +31,7 @@ function LoginPage() {
       <div className="text-muted-foreground text-center text-xs">or</div>
       <MagicLinkForm />
       <p className="text-muted-foreground text-center text-sm">
-        No account?{' '}
-        <Link
-          to="/signup"
-          search={{ redirect: redirectParam }}
-          className="underline"
-        >
-          Sign up
-        </Link>
+        Sign-up is coming soon.
       </p>
     </AuthCard>
   )
