@@ -1,4 +1,5 @@
 import { useState, useTransition } from 'react'
+import { useHydrated } from '@tanstack/react-router'
 import { Button } from '#/components/ui/button'
 import { Input } from '#/components/ui/input'
 import { Label } from '#/components/ui/label'
@@ -9,6 +10,8 @@ export function MagicLinkForm() {
   const [error, setError] = useState<string | null>(null)
   const [sent, setSent] = useState(false)
   const [pending, startTransition] = useTransition()
+  // Submitting before hydration would be a native POST that only reloads the page.
+  const hydrated = useHydrated()
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -53,7 +56,7 @@ export function MagicLinkForm() {
           {error}
         </p>
       ) : null}
-      <Button type="submit" variant="outline" disabled={pending}>
+      <Button type="submit" variant="outline" disabled={!hydrated || pending}>
         {pending ? 'Sending…' : 'Email me a sign-in link'}
       </Button>
     </form>
