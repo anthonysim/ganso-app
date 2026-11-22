@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
+  changePasswordSchema,
   credentialsSchema,
   magicLinkSchema,
   safeRedirect,
@@ -42,5 +43,38 @@ describe('safeRedirect', () => {
     expect(safeRedirect('//evil.com')).toBe('/budget')
     expect(safeRedirect('/\\evil.com')).toBe('/budget')
     expect(safeRedirect(undefined)).toBe('/budget')
+  })
+})
+
+describe('changePasswordSchema', () => {
+  const ok = {
+    currentPassword: 'oldpassword',
+    newPassword: 'newpassword',
+    confirmPassword: 'newpassword',
+  }
+
+  it('accepts a valid change', () => {
+    expect(changePasswordSchema.safeParse(ok).success).toBe(true)
+  })
+
+  it('rejects short, mismatched, or unchanged passwords', () => {
+    expect(
+      changePasswordSchema.safeParse({
+        ...ok,
+        newPassword: 'short',
+        confirmPassword: 'short',
+      }).success,
+    ).toBe(false)
+    expect(
+      changePasswordSchema.safeParse({ ...ok, confirmPassword: 'different1' })
+        .success,
+    ).toBe(false)
+    expect(
+      changePasswordSchema.safeParse({
+        ...ok,
+        newPassword: 'oldpassword',
+        confirmPassword: 'oldpassword',
+      }).success,
+    ).toBe(false)
   })
 })
