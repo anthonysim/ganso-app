@@ -1,4 +1,4 @@
-# budget-app
+# ganso
 
 YNAB clone to manage personal finances. Zero-based envelope budgeting.
 
@@ -14,8 +14,8 @@ YNAB clone to manage personal finances. Zero-based envelope budgeting.
 
 ```bash
 # 1. clone
-git clone https://github.com/anthonysim/budget-app.git
-cd budget-app
+git clone https://github.com/anthonysim/ganso-app.git
+cd ganso-app
 
 # 2. install deps
 pnpm install
@@ -62,7 +62,13 @@ pnpm db:generate   # writes SQL migration to drizzle/
 pnpm db:migrate    # applies it
 ```
 
-Hosted Supabase: set `DATABASE_URL` to the Supavisor **transaction pooler** URL (port 6543). The Drizzle client already uses `prepare: false` for that.
+The hosted database is not migrated automatically. Run migrations against it by hand, using the **session pooler** URL (port 5432):
+
+```bash
+DATABASE_URL='<session pooler url>' pnpm db:migrate
+```
+
+The Drizzle client (`src/db/index.ts`) uses node-postgres (`pg`). Don't switch it to postgres.js: that driver pipelines queries, which [Supabase warns](https://supabase.com/docs/guides/database/postgres-js) can hang or return mismatched rows through the transaction pooler.
 
 ## Scripts
 
@@ -164,10 +170,27 @@ Money is stored as integer **milliunits** ($1.00 = 1000). Never use floats for a
 
 ## Deploy (Vercel)
 
-1. Import the repo at [vercel.com/new](https://vercel.com/new).
-2. Keep detected **TanStack Start** framework settings (`vercel.json` pins it).
-3. Add env vars from `.env.example` under **Settings > Environment Variables** (once needed).
-4. Deploy. Every PR gets a preview URL.
+Merging to `main` deploys to production. Every PR gets a preview build.
+
+First-time setup:
+
+1. Import the repo at [vercel.com/new](https://vercel.com/new). `vercel.json` sets the **TanStack Start** framework and the function region (`pdx1`, next to the `us-west-2` database).
+2. Add these under **Settings > Environment Variables**:
+
+   | Name                            | Type   | Value                                             |
+   | ------------------------------- | ------ | ------------------------------------------------- |
+   | `VITE_SUPABASE_URL`             | Config | Supabase project URL                              |
+   | `VITE_SUPABASE_PUBLISHABLE_KEY` | Config | Supabase publishable key                          |
+   | `DATABASE_URL`                  | Secret | **Transaction pooler** URL (port 6543)            |
+   | `CRON_SECRET`                   | Secret | `openssl rand -hex 32` (see the cron job section) |
+
+3. Run the migrations against the hosted database (see Database workflow).
+4. Set the Supabase Auth URLs (see Auth).
+5. Deploy, then check that `/api/health` returns `{"ok":true,"db":"up"}`.
+
+- Use the pooler URLs. The direct `db.<ref>.supabase.co` host is IPv6 only without the paid IPv4 add-on, and Vercel can't reach it.
+- Environment variable changes only apply to new deployments, so redeploy after editing one.
+- Variables set for Production only are missing from previews. Such a preview can build successfully and still not work.
 
 Variables prefixed `VITE_` ship to the browser. Keep secrets unprefixed (server-only).
 
