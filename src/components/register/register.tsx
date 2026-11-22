@@ -1,4 +1,4 @@
-import { Fragment, useMemo, useState, useTransition } from 'react'
+import { Fragment, useMemo, useRef, useState, useTransition } from 'react'
 import { useRouter } from '@tanstack/react-router'
 import {
   flexRender,
@@ -25,7 +25,8 @@ import {
 import { BulkBar } from '#/components/register/bulk-bar'
 import { buildColumns } from '#/components/register/columns'
 import type { RegisterMeta } from '#/components/register/columns'
-import { TransactionDialog } from '#/components/register/transaction-dialog'
+import { TransactionEditor } from '#/components/register/transaction-editor'
+import type { TransactionEditorHandle } from '#/components/register/transaction-editor'
 import { NativeSelect } from '#/components/register/native-select'
 import {
   FLAGS,
@@ -51,7 +52,6 @@ import type {
   SplitRow,
   TransactionRow,
 } from '#/server/transactions-query'
-import { ConfirmDialog } from '#/components/categories/confirm-dialog'
 import { Money } from '#/components/accounts/money'
 
 interface RegisterData {
@@ -86,11 +86,9 @@ export function Register({
   const [query, setQuery] = useState(initialQuery)
   const [clearedFilter, setClearedFilter] = useState<ClearedFilter>('all')
   const [scheduledOpen, setScheduledOpen] = useState(false)
-  const [editingId, setEditingId] = useState<string | 'new' | null>(null)
+  const editor = useRef<TransactionEditorHandle>(null)
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
   const [flagFilter, setFlagFilter] = useState<'all' | 'any' | Flag>('all')
-  const [confirmEditId, setConfirmEditId] = useState<string | null>(null)
-  const [editingReconciled, setEditingReconciled] = useState(false)
   const [busy, startTransition] = useTransition()
 
   // Running balance is computed from the full list so filtering never changes it.
@@ -114,13 +112,7 @@ export function Register({
   )
 
   function requestEdit(id: string) {
-    const t = data.transactions.find((x) => x.id === id)
-    if (t?.cleared === 'reconciled') {
-      setConfirmEditId(id)
-    } else {
-      setEditingReconciled(false)
-      setEditingId(id)
-    }
+    editor.current?.open(id)
   }
 
   // Newest first for display
@@ -250,20 +242,6 @@ export function Register({
     }
   }
 
-  const editProps = {
-    budgetId: budget.id,
-    fixedAccountId: accountId,
-    accounts,
-    payees: data.payees,
-    categoryGroups: data.categoryGroups,
-    inflowCategoryId: data.inflowCategoryId,
-    currency: budget.currency,
-  }
-  const editingTransaction =
-    editingId !== null && editingId !== 'new'
-      ? data.transactions.find((t) => t.id === editingId)
-      : undefined
-
   return (
     <section aria-label="Transactions" className="flex flex-col gap-3">
       <div className="flex flex-wrap items-center gap-2">
@@ -309,7 +287,10 @@ export function Register({
           </SelectContent>
         </Select>
         {canEdit ? (
-          <Button className="ml-auto" onClick={() => setEditingId('new')}>
+          <Button
+            className="ml-auto"
+            onClick={() => editor.current?.open('new')}
+          >
             <PlusIcon /> Add transaction
           </Button>
         ) : null}
@@ -502,36 +483,17 @@ export function Register({
           </tbody>
         </table>
       </div>
-      {editingId !== null && (editingId === 'new' || editingTransaction) ? (
-        <TransactionDialog
-          key={editingId}
-          open
-          onOpenChange={(open) => {
-            if (!open) setEditingId(null)
-          }}
-          {...editProps}
-          transaction={editingTransaction}
-          existingSplits={
-            editingTransaction
-              ? splitsByTxn.get(editingTransaction.id)
-              : undefined
-          }
-          confirmReconciled={editingReconciled}
-        />
-      ) : null}
-      <ConfirmDialog
-        open={confirmEditId !== null}
-        onOpenChange={(open) => {
-          if (!open) setConfirmEditId(null)
-        }}
-        title="Edit a reconciled transaction?"
-        description="This transaction is reconciled. Changing it can make your balance differ from your bank. Edit anyway?"
-        confirmLabel="Edit anyway"
-        onConfirm={() => {
-          setEditingReconciled(true)
-          setEditingId(confirmEditId)
-          setConfirmEditId(null)
-        }}
+      <TransactionEditor
+        ref={editor}
+        budgetId={budget.id}
+        currency={budget.currency}
+        fixedAccountId={accountId}
+        accounts={accounts}
+        transactions={data.transactions}
+        splits={data.splits}
+        payees={data.payees}
+        categoryGroups={data.categoryGroups}
+        inflowCategoryId={data.inflowCategoryId}
       />
     </section>
   )
