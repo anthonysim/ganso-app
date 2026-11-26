@@ -12,7 +12,10 @@ export function MonthNav({
 }) {
   const current = firstOfMonth()
   return (
-    <nav aria-label="Month" className="flex items-center gap-1">
+    <nav
+      aria-label="Month"
+      className="flex items-center gap-1 @max-md/main:w-full"
+    >
       <Button asChild variant="outline" size="icon" aria-label="Previous month">
         <Link
           to="/budgets/$budgetId/budget"
@@ -23,7 +26,7 @@ export function MonthNav({
         </Link>
       </Button>
       <h2
-        className="min-w-40 text-center text-lg font-semibold"
+        className="min-w-40 text-center text-lg font-semibold @max-md/main:min-w-0 @max-md/main:flex-1"
         aria-live="polite"
       >
         {formatMonth(month)}
