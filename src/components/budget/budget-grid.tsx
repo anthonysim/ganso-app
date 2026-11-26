@@ -24,15 +24,6 @@ import {
 } from '@dnd-kit/sortable'
 import { toast } from 'sonner'
 import { CategoryLineRow } from '#/components/budget/budget-category-row'
-import {
-  ACTIONS_CELL,
-  ACTIVITY_CELL,
-  ASSIGNED_CELL,
-  AVAILABLE_CELL,
-  CARD_ROW,
-  CardLabel,
-} from '#/components/budget/card-layout'
-import { cn } from '#/lib/utils'
 import { GroupHeaderRow } from '#/components/budget/budget-group-row'
 import { useHotkey } from '#/hooks/use-hotkey'
 import { Money } from '#/components/accounts/money'
@@ -336,21 +327,22 @@ export function BudgetGrid({
           collisionDetection={closestCenter}
           onDragEnd={onDragEnd}
         >
-          <table className="w-full text-sm @max-md/main:block">
-            <thead className="bg-muted text-muted-foreground sticky top-0 z-10 text-left @max-md/main:block">
-              <tr className={CARD_ROW}>
-                <th className="px-3 py-2 font-medium">Category</th>
-                <th className="px-3 py-2 text-right font-medium @max-md/main:hidden">
+          <table className="w-full text-sm">
+            <thead className="bg-muted text-muted-foreground sticky top-0 z-10 text-left">
+              <tr>
+                <th className="px-3 py-2 font-medium @max-md/main:px-2">
+                  Category
+                </th>
+                <th className="px-3 py-2 text-right font-medium whitespace-nowrap @max-md/main:px-1.5">
                   Assigned
                 </th>
-                <th className="px-3 py-2 text-right font-medium @max-3xl/main:hidden">
+                <th className="px-3 py-2 text-right font-medium whitespace-nowrap @max-3xl/main:hidden">
                   Activity
                 </th>
-                <th className="px-3 py-2 text-right font-medium">
+                <th className="px-3 py-2 text-right font-medium whitespace-nowrap @max-md/main:px-2">
                   Available
-                  <span className="@md/main:hidden"> / Assigned</span>
                 </th>
-                <th className="w-10 px-2 py-1 text-right">
+                <th className="w-10 px-2 py-1 text-right @max-md/main:w-8 @max-md/main:px-0.5">
                   <Button
                     variant="ghost"
                     size="icon-sm"
@@ -367,7 +359,7 @@ export function BudgetGrid({
                 </th>
               </tr>
             </thead>
-            <tbody className="@max-md/main:block">
+            <tbody>
               {groups.map((g) => {
                 const isCollapsed = collapsed.has(g.id)
                 const sortable = canEdit && g.name !== PAYMENT_GROUP_NAME
@@ -405,30 +397,36 @@ export function BudgetGrid({
                   </Fragment>
                 )
               })}
-              <tr
-                className={cn('bg-muted/50 border-t font-semibold', CARD_ROW)}
-              >
-                <td className="px-3 py-2">Total</td>
-                <td className={cn('px-3 py-2 text-right', ASSIGNED_CELL)}>
+              <tr className="bg-muted/50 border-t font-semibold">
+                <td className="px-3 py-2 @max-md/main:px-2">
+                  Total
+                  <div className="hidden text-xs font-normal @max-3xl/main:block">
+                    <span className="text-muted-foreground mr-1">Activity</span>
+                    <Money
+                      value={view.totals.activity}
+                      currency={budget.currency}
+                    />
+                  </div>
+                </td>
+                <td className="px-3 py-2 text-right whitespace-nowrap @max-md/main:px-1.5">
                   <Money
                     value={view.totals.assigned}
                     currency={budget.currency}
                   />
                 </td>
-                <td className={cn('px-3 py-2 text-right', ACTIVITY_CELL)}>
-                  <CardLabel>Activity</CardLabel>
+                <td className="px-3 py-2 text-right whitespace-nowrap @max-3xl/main:hidden">
                   <Money
                     value={view.totals.activity}
                     currency={budget.currency}
                   />
                 </td>
-                <td className={cn('px-3 py-2 text-right', AVAILABLE_CELL)}>
+                <td className="px-3 py-2 text-right whitespace-nowrap @max-md/main:px-2">
                   <Money
                     value={view.totals.available}
                     currency={budget.currency}
                   />
                 </td>
-                <td className={ACTIONS_CELL} />
+                <td className="px-2 py-1 @max-md/main:px-0.5" />
               </tr>
             </tbody>
           </table>

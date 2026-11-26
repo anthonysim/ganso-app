@@ -12,14 +12,14 @@ export function TargetProgress({
 }) {
   const pct = Math.round(target.progress * 100)
   return (
-    <div className="mt-1 flex items-center gap-2 text-xs">
+    <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs">
       <div
         role="progressbar"
         aria-label="Target progress"
         aria-valuemin={0}
         aria-valuemax={100}
         aria-valuenow={pct}
-        className="bg-muted h-1.5 w-24 shrink-0 overflow-hidden rounded-full"
+        className="bg-muted h-1.5 w-24 shrink-0 overflow-hidden rounded-full @max-md/main:w-20"
       >
         <div
           className={cn(

@@ -22,7 +22,7 @@ export function AvailablePill({
     <span
       data-tone={tone}
       className={cn(
-        '-mr-3 inline-block min-w-24 rounded-full px-3 py-0.5 text-right text-sm font-medium tabular-nums',
+        '-mr-3 inline-block min-w-24 rounded-full px-3 py-0.5 text-right text-sm font-medium tabular-nums @max-md/main:-mr-2 @max-md/main:min-w-16 @max-md/main:px-2',
         tone === 'green' && 'bg-positive-soft text-positive-foreground',
         tone === 'grey' && 'bg-muted text-muted-foreground',
         tone === 'red' && 'bg-negative-soft text-negative-foreground',
