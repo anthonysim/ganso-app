@@ -1,4 +1,5 @@
 import { useState, useTransition } from 'react'
+import type { ReactNode } from 'react'
 import { useRouter } from '@tanstack/react-router'
 import { NotebookPenIcon } from 'lucide-react'
 import { toast } from 'sonner'
@@ -12,17 +13,21 @@ export function MonthNote({
   month,
   note,
   canEdit,
+  actions,
 }: {
   budgetId: string
   month: string
   note: string | null
   canEdit: boolean
+  /** Optional toolbar actions placed opposite the note trigger. */
+  actions?: ReactNode
 }) {
   const router = useRouter()
   const [open, setOpen] = useState(false)
   const [, startTransition] = useTransition()
+  const showTrigger = Boolean(note) || canEdit
 
-  if (!note && !canEdit) return null
+  if (!showTrigger && !actions) return null
 
   function save(value: string) {
     const next = value.trim()
@@ -39,18 +44,28 @@ export function MonthNote({
   }
 
   return (
-    <div className="flex flex-col gap-2">
-      <Button
-        variant="ghost"
-        size="sm"
-        className="w-fit"
-        aria-expanded={open}
-        onClick={() => setOpen((o) => !o)}
-      >
-        <NotebookPenIcon /> {note ? 'Month note' : 'Add a note for this month'}
-      </Button>
+    <>
+      {showTrigger ? (
+        <Button
+          variant="ghost"
+          size="sm"
+          className="col-start-1 -ml-2 w-fit"
+          aria-label={note ? 'Month note' : 'Add a note for this month'}
+          aria-expanded={open}
+          onClick={() => setOpen((o) => !o)}
+        >
+          <NotebookPenIcon />
+          <span className="@max-md/main:hidden">
+            {note ? 'Month note' : 'Add a note for this month'}
+          </span>
+          <span className="@md/main:hidden">
+            {note ? 'Month note' : 'Note'}
+          </span>
+        </Button>
+      ) : null}
+      {actions}
       {!open && note ? (
-        <p className="text-muted-foreground line-clamp-2 text-sm whitespace-pre-wrap">
+        <p className="text-muted-foreground col-span-2 line-clamp-2 text-sm whitespace-pre-wrap">
           {note}
         </p>
       ) : null}
@@ -60,15 +75,15 @@ export function MonthNote({
             // remount when the saved note or month changes so the field shows the new value
             key={`${month}-${note ?? ''}`}
             aria-label="Month note"
-            className={textareaClass}
+            className={`${textareaClass} col-span-2`}
             maxLength={2000}
             defaultValue={note ?? ''}
             onBlur={(e) => save(e.currentTarget.value)}
           />
         ) : (
-          <p className="text-sm whitespace-pre-wrap">{note}</p>
+          <p className="col-span-2 text-sm whitespace-pre-wrap">{note}</p>
         )
       ) : null}
-    </div>
+    </>
   )
 }

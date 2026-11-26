@@ -252,29 +252,25 @@ export function BudgetGrid({
 
   return (
     <div className="flex flex-col gap-4 p-4 @xl/main:p-6">
-      <div className="grid gap-3 @3xl/main:grid-cols-[1fr_auto]">
-        <div className="flex flex-wrap items-center justify-between gap-3 @3xl/main:col-span-2">
+      <div className="grid grid-cols-[1fr_auto] items-center gap-x-2 gap-y-3 @max-md/main:gap-y-2">
+        <div className="@max-md/main:col-span-2">
           <MonthNav budgetId={budget.id} month={view.month} />
-          <RtaBanner
-            readyToAssign={view.readyToAssign}
-            currency={budget.currency}
-            overspentCount={overspentCount}
-          />
         </div>
+        <RtaBanner
+          readyToAssign={view.readyToAssign}
+          currency={budget.currency}
+          overspentCount={overspentCount}
+          className="col-start-2 justify-self-end @max-md/main:w-full @max-md/main:justify-center"
+        />
 
-        <div className="-mt-1 min-w-0">
-          <MonthNote
-            budgetId={budget.id}
-            month={view.month}
-            note={view.monthNote}
-            canEdit={canEdit}
-          />
-        </div>
-
-        <div className="flex items-end gap-1 @3xl/main:justify-self-end">
-          <div className="flex gap-1">
-            {canEdit ? (
-              <>
+        <MonthNote
+          budgetId={budget.id}
+          month={view.month}
+          note={view.monthNote}
+          canEdit={canEdit}
+          actions={
+            canEdit ? (
+              <div className="col-start-2 flex justify-self-end gap-1">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline" size="sm">
@@ -314,10 +310,10 @@ export function BudgetGrid({
                   <Redo2Icon />{' '}
                   <span className="@max-md/main:hidden">Redo</span>
                 </Button>
-              </>
-            ) : null}
-          </div>
-        </div>
+              </div>
+            ) : null
+          }
+        />
       </div>
 
       <div className="overflow-clip rounded-lg border">
