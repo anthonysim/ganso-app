@@ -23,14 +23,6 @@ import {
 } from '#/components/ui/tooltip'
 import { AssignedCell } from '#/components/budget/assigned-cell'
 import { AvailablePill } from '#/components/budget/available-pill'
-import {
-  ACTIONS_CELL,
-  ACTIVITY_CELL,
-  ASSIGNED_CELL,
-  AVAILABLE_CELL,
-  CARD_ROW,
-  CardLabel,
-} from '#/components/budget/card-layout'
 import { TargetProgress } from '#/components/budget/target-progress'
 import { DragHandle, SortableRow } from '#/components/categories/sortable'
 import type { BudgetCategoryRow as CategoryRow } from '#/lib/budget-month'
@@ -102,11 +94,11 @@ export function CategoryLineRow({
 }) {
   const Row = sortable ? SortableRow : PlainRow
   return (
-    <Row id={c.id} className={cn('border-t', CARD_ROW)}>
+    <Row id={c.id} className="border-t">
       <td
         className={cn(
-          'px-3 py-1.5',
-          sortable ? 'pl-4' : 'pl-9 @max-md/main:pl-4',
+          'px-3 py-1.5 @max-md/main:px-2',
+          sortable ? 'pl-4 @max-md/main:pl-2' : 'pl-9 @max-md/main:pl-2',
           c.hidden && 'text-muted-foreground italic',
         )}
       >
@@ -121,7 +113,7 @@ export function CategoryLineRow({
               <TooltipContent>Drag to reorder</TooltipContent>
             </Tooltip>
           ) : null}
-          <div className="wrap-anywhere">
+          <div className="min-w-0 wrap-anywhere">
             {c.name}
             {c.note ? (
               <span
@@ -135,14 +127,14 @@ export function CategoryLineRow({
             {c.target ? (
               <TargetProgress target={c.target} currency={currency} />
             ) : null}
-            <div className="hidden text-xs @md/main:@max-3xl/main:block">
+            <div className="hidden text-xs @max-3xl/main:block">
               <span className="text-muted-foreground mr-1">Activity</span>
               <Money value={c.activity} currency={currency} />
             </div>
           </div>
         </div>
       </td>
-      <td className={cn('px-3 py-1 text-right', ASSIGNED_CELL)}>
+      <td className="px-3 py-1 text-right whitespace-nowrap @max-md/main:px-1.5">
         <AssignedCell
           name={c.name}
           assigned={c.assigned}
@@ -151,19 +143,13 @@ export function CategoryLineRow({
           onCommit={(next) => onCommitAssigned(c, next)}
         />
       </td>
-      <td
-        className={cn(
-          'px-3 py-1.5 text-right @max-md/main:pl-4',
-          ACTIVITY_CELL,
-        )}
-      >
-        <CardLabel>Activity</CardLabel>
+      <td className="px-3 py-1.5 text-right whitespace-nowrap @max-3xl/main:hidden">
         <Money value={c.activity} currency={currency} />
       </td>
-      <td className={cn('px-3 py-1.5 text-right', AVAILABLE_CELL)}>
+      <td className="px-3 py-1.5 text-right whitespace-nowrap @max-md/main:px-2">
         <AvailablePill category={c} currency={currency} />
       </td>
-      <td className={cn('px-2 py-1 @max-md/main:px-1', ACTIONS_CELL)}>
+      <td className="px-2 py-1 @max-md/main:px-0.5">
         {canEdit ? (
           <div className="flex gap-0.5 @max-3xl/main:hidden">
             <IconAction
