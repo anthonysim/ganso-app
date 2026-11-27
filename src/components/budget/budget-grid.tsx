@@ -382,12 +382,13 @@ export function BudgetGrid({
           collisionDetection={collisionDetection}
           onDragEnd={onDragEnd}
         >
-          <table className="w-full text-sm [&_tbody_*]:scroll-mt-[calc(var(--budget-header-h,0px)+1px+var(--budget-thead-h,0px))]">
+          <table className="w-full text-sm [&_tbody_*]:scroll-mt-[calc(var(--budget-header-h,0px)+var(--budget-thead-h,0px))]">
             <thead
               ref={theadRef}
-              // Sticks 1px below the toolbar so its redrawn top border (drawn 1px
-              // above the cells) is not painted over by the toolbar.
-              className="bg-muted text-muted-foreground top-[calc(var(--budget-header-h,0px)+1px)] z-10 text-left group-data-measured/budget:sticky [&_th]:shadow-[0_-1px_0_var(--border)]"
+              // Sticks flush under the toolbar (no gap for rows to show through)
+              // and stacks above it, so its redrawn top border, drawn 1px above
+              // the cells, covers the toolbar's bottom pixel row.
+              className="text-muted-foreground top-(--budget-header-h,0px) z-30 text-left group-data-measured/budget:sticky [&_th]:bg-muted [&_th]:shadow-[0_-1px_0_var(--border)]"
             >
               <tr>
                 <th className="relative px-3 py-2 font-medium @max-md/main:px-2">
