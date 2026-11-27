@@ -1,4 +1,10 @@
-import { Fragment, useEffect, useRef, useState, useTransition } from 'react'
+import {
+  Fragment,
+  useLayoutEffect,
+  useRef,
+  useState,
+  useTransition,
+} from 'react'
 import { useRouter } from '@tanstack/react-router'
 import {
   ChevronsDownUpIcon,
@@ -15,7 +21,7 @@ import {
   useSensor,
   useSensors,
 } from '@dnd-kit/core'
-import type { DragEndEvent } from '@dnd-kit/core'
+import type { CollisionDetection, DragEndEvent } from '@dnd-kit/core'
 import {
   SortableContext,
   arrayMove,
@@ -237,20 +243,47 @@ export function BudgetGrid({
   const allCollapsed =
     groups.length > 0 && groups.every((g) => collapsed.has(g.id))
 
-  // Header sticks to the scroll container; publish its height so the table's
-  // sticky column header can sit just below it.
+  // The toolbar and the column header both stick to the scroll container.
+  // Publish their heights so the column header sits just below the toolbar
+  // and focused rows scroll clear of both.
   const rootRef = useRef<HTMLDivElement>(null)
   const headerRef = useRef<HTMLDivElement>(null)
-  useEffect(() => {
+  const theadRef = useRef<HTMLTableSectionElement>(null)
+  useLayoutEffect(() => {
     const root = rootRef.current
     const header = headerRef.current
-    if (!root || !header) return
-    const observer = new ResizeObserver(() => {
-      root.style.setProperty('--budget-header-h', `${header.offsetHeight}px`)
-    })
-    observer.observe(header)
+    const thead = theadRef.current
+    if (!root || !header || !thead) return
+    const publish = () => {
+      // Unrounded heights, so no hairline gap opens at fractional sizes.
+      const headerH = header.getBoundingClientRect().height
+      const theadH = thead.getBoundingClientRect().height
+      root.style.setProperty('--budget-header-h', `${headerH}px`)
+      root.style.setProperty('--budget-thead-h', `${theadH}px`)
+    }
+    publish()
+    // Sticky positioning waits for this, so the column header never sticks at a
+    // guessed offset before hydration.
+    root.dataset.measured = ''
+    const observer = new ResizeObserver(publish)
+    observer.observe(header, { box: 'border-box' })
+    observer.observe(thead, { box: 'border-box' })
     return () => observer.disconnect()
   }, [])
+
+  // Rows scrolled under the pinned header can't be seen, so they can't be drop
+  // targets either: only consider rows whose centre is below the column header.
+  const collisionDetection: CollisionDetection = (args) => {
+    const visibleTop = theadRef.current?.getBoundingClientRect().bottom
+    if (visibleTop === undefined) return closestCenter(args)
+    return closestCenter({
+      ...args,
+      droppableContainers: args.droppableContainers.filter((container) => {
+        const rect = args.droppableRects.get(container.id)
+        return !rect || rect.top + rect.height / 2 >= visibleTop
+      }),
+    })
+  }
 
   function toggleAll() {
     setCollapsed(allCollapsed ? new Set() : new Set(groups.map((g) => g.id)))
@@ -268,11 +301,11 @@ export function BudgetGrid({
   return (
     <div
       ref={rootRef}
-      className="flex flex-col gap-4 px-4 pb-4 @xl/main:px-6 @xl/main:pb-6"
+      className="group/budget flex flex-col gap-4 px-4 pb-4 @xl/main:px-6 @xl/main:pb-6"
     >
       <div
         ref={headerRef}
-        className="bg-background sticky top-0 z-20 -mb-4 grid grid-cols-[1fr_auto] items-center gap-x-2 gap-y-3 pt-4 pb-4 @xl/main:pt-6 @max-md/main:gap-y-2"
+        className="bg-background sticky top-0 z-20 -mb-4 grid grid-cols-[1fr_auto] items-center gap-x-2 gap-y-3 pt-4 pb-3 @xl/main:pt-6 @max-md/main:gap-y-2 @max-md/main:pb-2"
       >
         <div className="@max-md/main:col-span-2">
           <MonthNav budgetId={budget.id} month={view.month} />
@@ -283,7 +316,10 @@ export function BudgetGrid({
           overspentCount={overspentCount}
           className="col-start-2 justify-self-end @max-md/main:w-full @max-md/main:justify-center"
         />
+      </div>
 
+      {/* The note and toolbar scroll away so a long note can't crowd out rows. */}
+      <div className="grid grid-cols-[1fr_auto] items-center gap-x-2 gap-y-3 empty:hidden @max-md/main:gap-y-2">
         <MonthNote
           budgetId={budget.id}
           month={view.month}
@@ -335,29 +371,27 @@ export function BudgetGrid({
             ) : null
           }
         />
-
-        {/* Redraws the table's rounded top edge over its sticky column header,
-            masking rows that scroll into the corners. Matches the table's own
-            border exactly, so it is invisible until the header sticks. */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-full h-3 overflow-hidden"
-        >
-          <div className="h-6 rounded-t-lg border shadow-[0_0_0_1rem_var(--background)]" />
-        </div>
       </div>
 
-      <div className="overflow-clip rounded-lg border">
+      {/* No overflow clipping: TableCorner pieces round all four corners, which
+          lets the stuck column header redraw the top border over the wrapper. */}
+      <div className="rounded-lg border">
         <DndContext
           id="budget-categories"
           sensors={sensors}
-          collisionDetection={closestCenter}
+          collisionDetection={collisionDetection}
           onDragEnd={onDragEnd}
         >
-          <table className="w-full text-sm">
-            <thead className="bg-muted text-muted-foreground sticky top-(--budget-header-h,0px) z-10 text-left">
+          <table className="w-full text-sm [&_tbody_*]:scroll-mt-[calc(var(--budget-header-h,0px)+1px+var(--budget-thead-h,0px))]">
+            <thead
+              ref={theadRef}
+              // Sticks 1px below the toolbar so its redrawn top border (drawn 1px
+              // above the cells) is not painted over by the toolbar.
+              className="bg-muted text-muted-foreground top-[calc(var(--budget-header-h,0px)+1px)] z-10 text-left group-data-measured/budget:sticky [&_th]:shadow-[0_-1px_0_var(--border)]"
+            >
               <tr>
-                <th className="px-3 py-2 font-medium @max-md/main:px-2">
+                <th className="relative px-3 py-2 font-medium @max-md/main:px-2">
+                  <TableCorner corner="top-left" />
                   Category
                 </th>
                 <th className="px-3 py-2 text-right font-medium whitespace-nowrap @max-md/main:px-1.5">
@@ -369,7 +403,8 @@ export function BudgetGrid({
                 <th className="px-3 py-2 text-right font-medium whitespace-nowrap @max-md/main:px-2">
                   Available
                 </th>
-                <th className="w-10 px-2 py-1 text-right @max-md/main:w-8 @max-md/main:px-0.5">
+                <th className="relative w-10 px-2 py-1 text-right @max-md/main:w-8 @max-md/main:px-0.5">
+                  <TableCorner corner="top-right" />
                   <Button
                     variant="ghost"
                     size="icon-sm"
@@ -425,7 +460,8 @@ export function BudgetGrid({
                 )
               })}
               <tr className="bg-muted/50 border-t font-semibold">
-                <td className="px-3 py-2 @max-md/main:px-2">
+                <td className="relative px-3 py-2 @max-md/main:px-2">
+                  <TableCorner corner="bottom-left" />
                   Total
                   <div className="hidden text-xs font-normal @max-3xl/main:block">
                     <span className="text-muted-foreground mr-1">Activity</span>
@@ -453,7 +489,9 @@ export function BudgetGrid({
                     currency={budget.currency}
                   />
                 </td>
-                <td className="px-2 py-1 @max-md/main:px-0.5" />
+                <td className="relative px-2 py-1 @max-md/main:px-0.5">
+                  <TableCorner corner="bottom-right" />
+                </td>
               </tr>
             </tbody>
           </table>
@@ -550,5 +588,45 @@ export function BudgetGrid({
         />
       ) : null}
     </div>
+  )
+}
+
+const CORNER_CLASSES = {
+  'top-left': [
+    '-top-px -left-px',
+    'top-0 left-0 rounded-tl-lg border-t border-l',
+  ],
+  'top-right': [
+    '-top-px -right-px',
+    'top-0 right-0 rounded-tr-lg border-t border-r',
+  ],
+  'bottom-left': [
+    '-bottom-px -left-px',
+    'bottom-0 left-0 rounded-bl-lg border-b border-l',
+  ],
+  'bottom-right': [
+    '-right-px -bottom-px',
+    'right-0 bottom-0 rounded-br-lg border-r border-b',
+  ],
+} as const
+
+/**
+ * Draws one rounded corner of the table's border over the cell it sits in,
+ * filling the area outside the curve with the page background. The table
+ * wrapper doesn't clip, so these keep row backgrounds off the border arcs, and
+ * the top pair redraws the corners on the column header while it is stuck.
+ * They line up with the wrapper's own border, so they are invisible otherwise.
+ */
+function TableCorner({ corner }: { corner: keyof typeof CORNER_CLASSES }) {
+  const [box, arc] = CORNER_CLASSES[corner]
+  return (
+    <span
+      aria-hidden
+      className={`pointer-events-none absolute size-3 overflow-hidden ${box}`}
+    >
+      <span
+        className={`absolute block size-6 shadow-[0_0_0_1rem_var(--background)] ${arc}`}
+      />
+    </span>
   )
 }
