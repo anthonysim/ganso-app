@@ -27,8 +27,8 @@ export const CELL: Record<string, string | undefined> = {
     '@max-[62rem]/main:col-start-3 @max-[62rem]/main:row-start-1 @max-[62rem]/main:p-0',
   cleared:
     '@max-[62rem]/main:col-start-4 @max-[62rem]/main:row-start-1 @max-[62rem]/main:p-1',
-  categoryName: `@max-[62rem]/main:col-start-2 @max-[62rem]/main:row-start-2 ${DETAIL}`,
-  date: `@max-[62rem]/main:col-start-3 @max-[62rem]/main:row-start-2 @max-[62rem]/main:text-right ${DETAIL}`,
+  date: `@max-[62rem]/main:col-start-2 @max-[62rem]/main:row-start-2 ${DETAIL}`,
+  categoryName: `@max-[62rem]/main:col-start-3 @max-[62rem]/main:row-start-2 @max-[62rem]/main:max-w-48 @max-[62rem]/main:truncate @max-[62rem]/main:text-right ${DETAIL}`,
   actions:
     '@max-[62rem]/main:col-start-4 @max-[62rem]/main:row-start-2 @max-[62rem]/main:p-0',
   accountName: `@max-[62rem]/main:col-span-2 @max-[62rem]/main:col-start-2 @max-[62rem]/main:row-start-3 ${DETAIL}`,
