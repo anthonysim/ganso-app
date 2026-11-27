@@ -1,4 +1,4 @@
-import { Fragment, useState, useTransition } from 'react'
+import { Fragment, useEffect, useRef, useState, useTransition } from 'react'
 import { useRouter } from '@tanstack/react-router'
 import {
   ChevronsDownUpIcon,
@@ -237,6 +237,21 @@ export function BudgetGrid({
   const allCollapsed =
     groups.length > 0 && groups.every((g) => collapsed.has(g.id))
 
+  // Header sticks to the scroll container; publish its height so the table's
+  // sticky column header can sit just below it.
+  const rootRef = useRef<HTMLDivElement>(null)
+  const headerRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const root = rootRef.current
+    const header = headerRef.current
+    if (!root || !header) return
+    const observer = new ResizeObserver(() => {
+      root.style.setProperty('--budget-header-h', `${header.offsetHeight}px`)
+    })
+    observer.observe(header)
+    return () => observer.disconnect()
+  }, [])
+
   function toggleAll() {
     setCollapsed(allCollapsed ? new Set() : new Set(groups.map((g) => g.id)))
   }
@@ -251,8 +266,14 @@ export function BudgetGrid({
   }
 
   return (
-    <div className="flex flex-col gap-4 p-4 @xl/main:p-6">
-      <div className="grid grid-cols-[1fr_auto] items-center gap-x-2 gap-y-3 @max-md/main:gap-y-2">
+    <div
+      ref={rootRef}
+      className="flex flex-col gap-4 px-4 pb-4 @xl/main:px-6 @xl/main:pb-6"
+    >
+      <div
+        ref={headerRef}
+        className="bg-background sticky top-0 z-20 -mb-4 grid grid-cols-[1fr_auto] items-center gap-x-2 gap-y-3 pt-4 pb-4 @xl/main:pt-6 @max-md/main:gap-y-2"
+      >
         <div className="@max-md/main:col-span-2">
           <MonthNav budgetId={budget.id} month={view.month} />
         </div>
@@ -314,6 +335,16 @@ export function BudgetGrid({
             ) : null
           }
         />
+
+        {/* Redraws the table's rounded top edge over its sticky column header,
+            masking rows that scroll into the corners. Matches the table's own
+            border exactly, so it is invisible until the header sticks. */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 top-full h-3 overflow-hidden"
+        >
+          <div className="h-6 rounded-t-lg border shadow-[0_0_0_1rem_var(--background)]" />
+        </div>
       </div>
 
       <div className="overflow-clip rounded-lg border">
@@ -324,7 +355,7 @@ export function BudgetGrid({
           onDragEnd={onDragEnd}
         >
           <table className="w-full text-sm">
-            <thead className="bg-muted text-muted-foreground sticky top-0 z-10 text-left">
+            <thead className="bg-muted text-muted-foreground sticky top-(--budget-header-h,0px) z-10 text-left">
               <tr>
                 <th className="px-3 py-2 font-medium @max-md/main:px-2">
                   Category
