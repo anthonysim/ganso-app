@@ -36,6 +36,7 @@ import type { RegisterMeta } from '#/components/register/columns'
 import { TransactionEditor } from '#/components/register/transaction-editor'
 import type { TransactionEditorHandle } from '#/components/register/transaction-editor'
 import { NativeSelect } from '#/components/register/native-select'
+import { TransferButton } from '#/components/register/transfer-dialog'
 import {
   FLAGS,
   FLAG_COLORS,
@@ -299,12 +300,22 @@ export function Register({
           </SelectContent>
         </Select>
         {canEdit ? (
-          <Button
-            className="ml-auto @max-xl/main:w-full"
-            onClick={() => editor.current?.open('new')}
-          >
-            <PlusIcon /> Add transaction
-          </Button>
+          <div className="ml-auto flex gap-2 @max-xl/main:w-full">
+            <TransferButton
+              className="@max-xl/main:flex-1"
+              budgetId={budget.id}
+              accounts={accounts}
+              defaultFromId={accountId}
+              categoryGroups={data.categoryGroups}
+              inflowCategoryId={data.inflowCategoryId}
+            />
+            <Button
+              className="@max-xl/main:flex-1"
+              onClick={() => editor.current?.open('new')}
+            >
+              <PlusIcon /> Add transaction
+            </Button>
+          </div>
         ) : null}
       </div>
 
