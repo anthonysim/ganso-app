@@ -75,13 +75,21 @@ export function MonthNote({
             // remount when the saved note or month changes so the field shows the new value
             key={`${month}-${note ?? ''}`}
             aria-label="Month note"
-            className={`${textareaClass} col-span-2`}
+            className={`${textareaClass} col-span-2 max-h-[30svh]`}
             maxLength={2000}
             defaultValue={note ?? ''}
             onBlur={(e) => save(e.currentTarget.value)}
           />
         ) : (
-          <p className="col-span-2 text-sm whitespace-pre-wrap">{note}</p>
+          // Focusable and labelled so keyboard users can scroll a long note.
+          <div
+            role="region"
+            aria-label="Month note"
+            tabIndex={0}
+            className="col-span-2 max-h-[30svh] overflow-y-auto text-sm whitespace-pre-wrap"
+          >
+            {note}
+          </div>
         )
       ) : null}
     </>
